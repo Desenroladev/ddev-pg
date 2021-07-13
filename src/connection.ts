@@ -5,7 +5,7 @@ export class Connection {
     constructor(private client: PoolClient) {
     }
 
-    async begin() {
+    async begin() : Promise<void> {
         await this.client.query('BEGIN');
     }
 
@@ -34,7 +34,7 @@ export class Connection {
         return res.rows[0];
     }
 
-    async close() {
+    async close() : Promise<void> {
         await this.client.release();
     }
 
