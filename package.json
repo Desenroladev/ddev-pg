@@ -1,18 +1,38 @@
 {
   "name": "@desenroladev/pg",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.4",
+  "description": "Simple Connection to postgreSQL",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "prepublish": "tsc",
+  "private": false,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rm -rf ./dist && tsc",
+    "publish": "npm publish --access=public"
   },
-  "keywords": [],
-  "author": "Antoniel Lima",
-  "license": "ISC",
+  "author": "Antoniel Lima <antoniellimma@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Desenroladev/ddev-pg.git"
+  },
+  "keywords": [
+    "PostgreSQL",
+    "Desenrola",
+    "Dev",
+    "PG",
+    "Node"
+  ],
   "devDependencies": {
     "@types/node": "^16.3.1",
     "ts-node": "^10.1.0",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@types/pg": "^8.6.1",
+    "dotenv": "^10.0.0",
+    "moment": "^2.29.1",
+    "pg": "^8.6.0"
   }
 }
