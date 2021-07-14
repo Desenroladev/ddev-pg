@@ -4,12 +4,6 @@ import moment from 'moment';
 import {Pool, PoolClient, types} from 'pg';
 import { Connection } from './connection';
 
-const parseFn = (val: string) => {
-   return val === null ? null : moment(val).format();
-};
-types.setTypeParser(types.builtins.TIMESTAMPTZ, parseFn);
-types.setTypeParser(types.builtins.TIMESTAMP, parseFn);
-
 export class Database {
     
     private pool: Pool;
