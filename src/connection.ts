@@ -1,54 +1,74 @@
-import moment from "moment";
+
 import { PoolClient } from "pg";
+import { DatabaseError } from "./database.error";
+import SqlQuery from "./sql.query";
 
 export class Connection {
 
-    constructor(private client: PoolClient) {
-    }
+    constructor(private client: PoolClient) {}
 
     async begin() : Promise<void> {
-        await this.client.query('BEGIN');
+        try {
+            await this.client.query('BEGIN');
+        } catch(err) {
+            throw new DatabaseError(err);
+        }
     }
 
     async commit(): Promise<void> {
-        await this.client.query('COMMIT');
-        await this.close();
+        try {
+            await this.client.query('COMMIT');
+            await this.close();
+        } catch(err) {
+            throw new DatabaseError(err);
+        }
     }
 
     async rollback() {
-        await this.client.query('ROLLBACK');
-        await this.close();
+        try {
+            await this.client.query('ROLLBACK');
+            await this.close();
+        } catch(err) {
+            throw new DatabaseError(err);
+        }
     }
 
-    mapBinds(binds: any[]) {
-        
-        if(!binds) return binds;
-
-        return binds.map(bind => {
-                    if(moment(bind).isValid()) {
-                        return bind.substring(0, 19) + (process.env.DB_UTC || '-00:00');
-                    }
-                    return bind;
-                });
+    async query<T>(sql:string, binds:any = null) : Promise<T[]> {
+        try {
+            const query = new SqlQuery(sql, binds, this.client);
+            const res = await query.execute();
+            return res?.rows ? res.rows : null;
+        } catch(err) {
+            throw new DatabaseError(err);
+        }
     }
 
-    async query<T>(sql:string, binds:any[] = null) : Promise<T[]> {
-        const res = await this.client.query(sql, this.mapBinds(binds));
-        return res.rows;
+    async find<T>(sql:string, binds:any = null) : Promise<T> {
+        try {
+            const query = new SqlQuery(sql, binds, this.client);
+            const res = await query.execute();
+            return res?.rows?.length > 0 ? res.rows[0] : null;
+        } catch(err) {
+            throw new DatabaseError(err);
+        }
     }
 
-    async find<T>(sql:string, binds:any[] = null) : Promise<T> {
-        const res = await this.client.query(sql, this.mapBinds(binds));
-        return res.rows[0];
-    }
-
-    async execute<T>(sql:string, binds:any[] = null) : Promise<T> {
-        const res = await this.client.query(sql, this.mapBinds(binds));
-        return res.rows[0];
+    async execute<T>(sql:string, binds:any = null) : Promise<T> {
+        try {
+            const query = new SqlQuery(sql, binds, this.client);
+            const res = await query.execute();
+            return res?.rows?.length > 0 ? res.rows[0] : null;
+        } catch(err) {
+            throw new DatabaseError(err);
+        }
     }
 
     async close() : Promise<void> {
-        await this.client.release();
+        try {
+            await this.client.release();
+        } catch(err) {
+            throw new DatabaseError(err);
+        }
     }
 
 }

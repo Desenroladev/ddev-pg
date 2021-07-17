@@ -1,6 +1,6 @@
 {
   "name": "@desenroladev/pg",
-  "version": "1.0.5",
+  "version": "1.0.12",
   "description": "Simple Connection to postgreSQL",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
