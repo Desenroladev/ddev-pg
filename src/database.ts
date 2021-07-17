@@ -1,7 +1,6 @@
 
 import dotenv from 'dotenv';
-import moment from 'moment';
-import {Pool, PoolClient, types} from 'pg';
+import {Pool, types} from 'pg';
 import { Connection } from './connection';
 import { DatabaseError } from './database.error';
 import TimestampTzParser from './timestamptz.parser';
@@ -9,6 +8,7 @@ import TimeTzParser from './timetz.parser';
 import DateParser from './date.parser';
 import TimestampParser from './timestamp.parser';
 import TimeParser from './time.parser';
+import DatabaseOptions from './database.options';
 
 types.setTypeParser(types.builtins.DATE, DateParser.execute);
 types.setTypeParser(types.builtins.TIMESTAMP, TimestampParser.execute);
@@ -20,16 +20,20 @@ export class Database {
     
     private pool: Pool;
 
-    constructor() {
-        const config = {...dotenv.config().parsed};
+    constructor(options: DatabaseOptions = null) {
 
-        this.pool = new Pool({
-            user: config.DB_USER,
-            host: config.DB_HOST,
-            database: config.DB_DATABASE,
-            password: config.DB_PASSWORD,
-            port: parseInt(config.DB_PORT)
-        });
+        if(!options) {
+            const env = {...dotenv.config().parsed};
+            options = {
+                user: env.DB_USER,
+                host: env.DB_HOST,
+                database: env.DB_DATABASE,
+                password: env.DB_PASSWORD,
+                port: parseInt(env.DB_PORT)
+            }
+        }
+
+        this.pool = new Pool(options);
     }
 
     async getConnection() : Promise<Connection> {

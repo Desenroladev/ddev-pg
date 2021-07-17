@@ -12,9 +12,15 @@ describe('Testing Database Connection > ', () => {
                         hours,
                         _timestamp,
                         hora
-                    from todo`;
+                    from todo_dev`;
 
-        const db = new Database();
+        const db = new Database({
+            host: 'localhost',
+            port: 5432,
+            user: 'postgres',
+            password: 'ddev',
+            database: 'ddev'
+        });
         const rows = await db.query(sql);
 
         console.log(rows);
@@ -33,7 +39,7 @@ describe('Testing Database Connection > ', () => {
                 _timestamp: '2021-07-17T09:34:17',
                 hora: '18:10:34'
             };
-            const sql = `insert into todo(title, concluded_at, date_start, hours,_timestamp, hora) 
+            const sql = `insert into todo_dev(title, concluded_at, date_start, hours,_timestamp, hora) 
                             values(:title, :concluded_at, :date_start, :hours, :_timestamp, :hora) 
                             returning *`;
             const res = await connection.execute(sql, binds);
